@@ -15,3 +15,134 @@ This guide provides a quick overview for getting started with the LatAm Synth [t
 | Tool | Package | Serializable | JS support | Downloads | Version |
 | :--- | :--- | :---: | :---: | :---: | :---: |
 | `generate_latam_financial_data` | [`langchain-latam-synth`](https://pypi.org/project/langchain-latam-synth/) | ❌ | ❌ | ![PyPI - Downloads](https://img.shields.io/pypi/dm/langchain-latam-synth?style=flat-square&label=%20) | ![PyPI - Version](https://img.shields.io/pypi/v/langchain-latam-synth?style=flat-square&label=%20) |
+
+### Features
+
+- Generates linked synthetic financial users, savings goals, and transactions.
+- Supports reproducible generation through a configurable random seed.
+- Supports optional country filtering, for example Colombia and Mexico.
+- Returns structured data that can be passed back to a LangChain agent.
+- Uses the LatAm Synth Apify Actor as the execution backend.
+
+---
+
+## Setup
+
+To use the tool, install the `langchain-latam-synth` package and configure an Apify API token.
+
+### Credentials
+
+Create an Apify API token and expose it as `APIFY_TOKEN`:
+
+```python
+import getpass
+import os
+
+if "APIFY_TOKEN" not in os.environ:
+    os.environ["APIFY_TOKEN"] = getpass.getpass("Enter your Apify API token: ")
+```
+
+It's also helpful, but not required, to set up LangSmith for observability and tracing of tool calls:
+
+```python
+os.environ["LANGSMITH_API_KEY"] = getpass.getpass("Enter your LangSmith API key: ")
+os.environ["LANGSMITH_TRACING"] = "true"
+```
+
+### Installation
+
+```bash
+pip install -U langchain-latam-synth
+```
+
+---
+
+## Instantiation
+
+The integration exports a ready-to-use LangChain tool:
+
+```python
+from langchain_latam_synth import generate_latam_financial_data
+
+tool = generate_latam_financial_data
+```
+
+The tool accepts:
+
+- `users`: Number of synthetic users to generate, from 1 to 200.
+- `seed`: Random seed for reproducible datasets.
+- `countries`: Optional list of Latin American countries to include.
+
+---
+
+## Invocation
+
+### Directly
+
+```python
+result = tool.invoke(
+    {
+        "users": 25,
+        "seed": 42,
+        "countries": ["Colombia", "Mexico"],
+    }
+)
+
+print(result["run_id"])
+print(len(result["users"]))
+print(len(result["goals"]))
+print(len(result["transactions"]))
+```
+
+The returned dictionary contains `run_id`, `generator`, `users`, `goals`, and `transactions`.
+
+### As a ToolCall
+
+```python
+model_generated_tool_call = {
+    "args": {
+        "users": 10,
+        "seed": 42,
+        "countries": ["Colombia"],
+    },
+    "id": "1",
+    "name": tool.name,
+    "type": "tool_call",
+}
+
+message = tool.invoke(model_generated_tool_call)
+```
+
+### Within an agent
+
+Use the tool with a LangChain model that supports tool calling:
+
+```python
+from langchain.agents import create_agent
+from langchain_latam_synth import generate_latam_financial_data
+
+agent = create_agent(
+    model="claude-sonnet-4-6",
+    tools=[generate_latam_financial_data],
+)
+
+agent.invoke(
+    {
+        "messages": [
+            {
+                "role": "user",
+                "content": "Generate a small synthetic Colombian fintech dataset for testing a savings recommendation agent.",
+            }
+        ]
+    }
+)
+```
+
+---
+
+## API reference
+
+- [langchain-latam-synth on PyPI](https://pypi.org/project/langchain-latam-synth/)
+- [langchain-latam-synth source repository](https://github.com/jmendozapuche/langchain-latam-synth)
+- [generate_latam_financial_data source](https://github.com/jmendozapuche/langchain-latam-synth/blob/main/src/langchain_latam_synth/tools.py)
+- [LatAm Synth generator repository](https://github.com/jmendozapuche/latam-synth)
