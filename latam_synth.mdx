@@ -1,0 +1,42 @@
+---
+title: LatAm Synth integration
+description: Integrate with LatAm Synth to generate privacy-safe synthetic financial data using LangChain Python.
+integration:
+  name: LatAm Synth
+  pypi: langchain-latam-synth
+---
+
+This guide provides a quick overview for getting started with the LatAm Synth [tool](/oss/langchain/tools). LatAm Synth generates synthetic financial users, savings goals, and transactions for Latin American fintech testing, AI agent evaluation, machine-learning experiments, demos, and data pipelines without using personally identifiable information.
+
+## Overview
+
+### Integration details
+
+| Tool | Package | Serializable | JS support | Downloads | Version |
+| :--- | :--- | :---: | :---: | :---: | :---: |
+| `generate_latam_financial_data` | [`langchain-latam-synth`](https://pypi.org/project/langchain-latam-synth/) | ❌ | ❌ | ![PyPI - Downloads](https://img.shields.io/pypi/dm/langchain-latam-synth?style=flat-square&label=%20) | ![PyPI - Version](https://img.shields.io/pypi/v/langchain-latam-synth?style=flat-square&label=%20) |
+
+### Features
+
+- Generates linked synthetic financial users, savings goals, and transactions.
+- Supports reproducible generation through a configurable random seed.
+- Supports optional country filtering, for example Colombia and Mexico.
+- Returns structured data that can be passed back to a LangChain agent.
+- Uses the LatAm Synth Apify Actor as the execution backend.
+
+---
+
+## Setup
+
+To use the tool, install the `langchain-latam-synth` package and configure an Apify API token.
+
+### Credentials
+
+Create an Apify API token and expose it as `APIFY_TOKEN`:
+
+```python Set API key icon="key"
+import getpass
+import os
+
+if "APIFY_TOKEN" not in os.environ:
+    os.environ["APIFY_TOKEN"] = getpass.getpass("Enter your Apify API token: ")
