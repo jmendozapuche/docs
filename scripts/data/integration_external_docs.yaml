@@ -802,6 +802,9 @@ python:
   - name: AlphaAIInsiderSummary
     pypi: langchain-alphai
     docs_url: https://alphai.io/developers
+  - name: GenerateLatamFinancialData
+    pypi: langchain-latam-synth
+    docs_url: https://github.com/jmendozapuche/langchain-latam-synth
   middleware:
   - name: CopilotKit
     pypi: copilotkit
